@@ -1,14 +1,13 @@
 1. 创建 Docker 网络
-
     1. 创建 Docker 网络
-        docker network create --subnet=172.19.16.0/24 shalins
+        ```docker network create --subnet=172.19.16.0/24 shalins```
     2. 检查网络是否创建成功：
-        docker network ls
+        ```docker network ls```
     3. 验证网络详细信息：
-        docker network inspect shalins
+        ```docker network inspect shalins```
 2. 修改docker Engine的内容如下：
     ```
-        {
+    {
     "bridge": "docker0",
     "builder": {
         "gc": {
@@ -47,29 +46,23 @@
         sysName SNMP-Test
         ```
     3. 使用以下命令构建镜像:
-        docker build -t custom-snmpd .
+        ```docker build -t custom-snmpd .```
         
 
 4. Docker容器相关操作·：
 
     1. 运行以下命令，创建 10 台主机容器，并分配固定 IP 地址：
-        FOR /L %i IN (1,1,60) DO docker run -d --net shalins --ip 172.19.16.%i -p 161%i:161/udp --name snmp%i custom-snmpd
+        ```FOR /L %i IN (1,1,60) DO docker run -d --net shalins --ip 172.19.16.%i -p 161%i:161/udp --name snmp%i custom-snmpd```
     2. 开启容器：
-        FOR /L %i IN (1,1,70) DO docker start snmp%i
+        ```FOR /L %i IN (1,1,70) DO docker start snmp%i```
     3. 关闭容器：
-        FOR /L %i IN (1,1,70) DO docker stop snmp%i
+       ``` FOR /L %i IN (1,1,70) DO docker stop snmp%i```
     4. 一次性启动所有包含 snmp 的容器；
-        FOR /F "tokens=*" %i IN ('docker ps -a -q --filter "name=snmp"') DO docker start %i
+        ```FOR /F "tokens=*" %i IN ('docker ps -a -q --filter "name=snmp"') DO docker start %i```
     5. 一次性停止所有包含 snmp 的容器
-        FOR /F "tokens=*" %i IN ('docker ps -q --filter "name=snmp"') DO docker stop %i
+        ```FOR /F "tokens=*" %i IN ('docker ps -q --filter "name=snmp"') DO docker stop %i```
 
-5. 主机所需配置：
-    1. 安装 pysnmp
-        pip install pysnmp==4.4.12
-    2. 安装 PyQt5
-        pip install PyQt5
-    3. 安装 Matplotlib
-        pip install matplotlib
+5. 在你的电脑上安装sqlite
 
 
 
