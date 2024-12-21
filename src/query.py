@@ -6,7 +6,8 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
 
-0
+
+
 def snmp_get(ip, oid, port=161):
     """
     Fetches SNMP data for a given OID from the target host.

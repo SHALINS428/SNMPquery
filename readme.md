@@ -67,9 +67,9 @@
     1. 运行以下命令，创建 60 台主机容器，并分配固定 IP 地址，**同时实现了端口映射**：
         ```FOR /L %i IN (1,1,60) DO docker run -d --net shalins --ip 172.19.16.%i -p 161%i:161/udp --name snmp%i custom-snmpd```
     2. 开启容器：
-        ```FOR /L %i IN (1,1,70) DO docker start snmp%i```
+        ```FOR /L %i IN (1,1,60) DO docker start snmp%i```
     3. 关闭容器：
-       ``` FOR /L %i IN (1,1,70) DO docker stop snmp%i```
+       ``` FOR /L %i IN (1,1,60) DO docker stop snmp%i```
     4. 一次性启动所有包含 snmp 的容器；
         ```FOR /F "tokens=*" %i IN ('docker ps -a -q --filter "name=snmp"') DO docker start %i```
     5. 一次性停止所有包含 snmp 的容器
