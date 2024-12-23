@@ -143,10 +143,6 @@ class HostInfoManager(QMainWindow):
         self.table.setHorizontalHeaderLabels(["ID", "IP", "Port", "Description", "Name", "UpTime", "Location"])
         layout.addWidget(self.table)
 
-        # # Custom Data Input
-        # self.custom_input = QLineEdit()
-        # self.custom_input.setPlaceholderText("Enter custom data for the selected row")
-        # layout.addWidget(self.custom_input)
 
         # Buttons
         button_layout = QHBoxLayout()
@@ -155,9 +151,6 @@ class HostInfoManager(QMainWindow):
         self.refresh_button.clicked.connect(self.load_host_data)
         button_layout.addWidget(self.refresh_button)
 
-        # self.save_custom_button = QPushButton("Save Custom Data")
-        # self.save_custom_button.clicked.connect(self.save_custom_data)
-        # button_layout.addWidget(self.save_custom_button)
 
         self.delete_button = QPushButton("Delete Selected Host")
         self.delete_button.clicked.connect(self.delete_selected_host)
