@@ -1,12 +1,11 @@
 import time
 import sqlite3
 from pysnmp.hlapi import *
-from PyQt5.QtWidgets import (QApplication, QMainWindow, QVBoxLayout, QWidget, QTableWidget, QTableWidgetItem,
-                             QPushButton, QMessageBox, QHBoxLayout, QLineEdit)
+from PyQt5.QtWidgets import (QApplication, QMainWindow, QVBoxLayout, QWidget, QTableWidget, QTableWidgetItem,QPushButton, QMessageBox, QHBoxLayout, QLineEdit)
 from PyQt5.QtCore import QTimer, QThread, pyqtSignal
 
 
-# SNMP Query Function
+
 def snmp_get(ip, oid, port=161):
     try:
         iterator = getCmd(SnmpEngine(),
@@ -24,7 +23,7 @@ def snmp_get(ip, oid, port=161):
         return None
 
 
-# Database Manager
+
 class DatabaseManager:
     def __init__(self, db_name="hosts.db"):
         self.db_name = db_name  # 保存数据库文件名
@@ -140,14 +139,14 @@ class HostInfoManager(QMainWindow):
 
         # Table
         self.table = QTableWidget()
-        self.table.setColumnCount(8)
-        self.table.setHorizontalHeaderLabels(["ID", "IP", "Port", "Description", "Name", "UpTime", "Location", "Custom Data"])
+        self.table.setColumnCount(7)
+        self.table.setHorizontalHeaderLabels(["ID", "IP", "Port", "Description", "Name", "UpTime", "Location"])
         layout.addWidget(self.table)
 
-        # Custom Data Input
-        self.custom_input = QLineEdit()
-        self.custom_input.setPlaceholderText("Enter custom data for the selected row")
-        layout.addWidget(self.custom_input)
+        # # Custom Data Input
+        # self.custom_input = QLineEdit()
+        # self.custom_input.setPlaceholderText("Enter custom data for the selected row")
+        # layout.addWidget(self.custom_input)
 
         # Buttons
         button_layout = QHBoxLayout()
@@ -156,9 +155,9 @@ class HostInfoManager(QMainWindow):
         self.refresh_button.clicked.connect(self.load_host_data)
         button_layout.addWidget(self.refresh_button)
 
-        self.save_custom_button = QPushButton("Save Custom Data")
-        self.save_custom_button.clicked.connect(self.save_custom_data)
-        button_layout.addWidget(self.save_custom_button)
+        # self.save_custom_button = QPushButton("Save Custom Data")
+        # self.save_custom_button.clicked.connect(self.save_custom_data)
+        # button_layout.addWidget(self.save_custom_button)
 
         self.delete_button = QPushButton("Delete Selected Host")
         self.delete_button.clicked.connect(self.delete_selected_host)

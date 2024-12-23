@@ -9,16 +9,15 @@ from matplotlib.figure import Figure
 
 
 def snmp_get(ip, oid, port=161):
-    """
-    Fetches SNMP data for a given OID from the target host.
-    """
     try:
         iterator = getCmd(SnmpEngine(),
-                          CommunityData('public', mpModel=0),
+                          CommunityData('public', mpModel=1),
                           UdpTransportTarget((ip, port)),
                           ContextData(),
                           ObjectType(ObjectIdentity(oid)))
+
         errorIndication, errorStatus, errorIndex, varBinds = next(iterator)
+
         if errorIndication:
             print(f"SNMP Error: {errorIndication}")
             return None
@@ -27,21 +26,28 @@ def snmp_get(ip, oid, port=161):
             return None
         else:
             for varBind in varBinds:
-                return varBind[1]
+                value = varBind[1]
+                if isinstance(value, bytes):
+                    mac_address = ':'.join(format(byte, '02x') for byte in value)
+                    return mac_address.upper() 
+                else:
+                    return value.prettyPrint()
     except Exception as e:
         print(f"Exception while querying SNMP: {e}")
         return None
+
+
 
 
 def get_supported_interfaces(ip, port=161):
     """
     Query supported interfaces from the device.
     """
-    base_oid = '1.3.6.1.2.1.2.2.1.1'  # ifIndex OID
+    base_oid = '1.3.6.1.2.1.2.2.1.1'  
     interfaces = []
     try:
         iterator = nextCmd(SnmpEngine(),
-                           CommunityData('public', mpModel=0),
+                           CommunityData('public', mpModel=1),
                            UdpTransportTarget((ip, port)),
                            ContextData(),
                            ObjectType(ObjectIdentity(base_oid)),
@@ -55,13 +61,14 @@ def get_supported_interfaces(ip, port=161):
                 break
             else:
                 for varBind in varBinds:
-                    interfaces.append(int(varBind[1]))
+                    if int(varBind[1]) != 1:  
+                        interfaces.append(int(varBind[1]))
     except Exception as e:
         print(f"Exception while fetching interfaces: {e}")
     return interfaces
 
 
-# PyQt + Matplotlib Visualization
+
 class NetworkTrafficWindow(QMainWindow):
     def __init__(self, target, port):
         super().__init__()
@@ -157,9 +164,6 @@ class NetworkTrafficWindow(QMainWindow):
 
 
 def task_3():
-    """
-    Fetch and display detailed host information for a range of IPs and ports.
-    """
     oids = {
         "sysDescr": '1.3.6.1.2.1.1.1.0',
         "sysObjectID": '1.3.6.1.2.1.1.2.0',
@@ -169,18 +173,42 @@ def task_3():
         "sysLocation": '1.3.6.1.2.1.1.6.0',
     }
 
-    for port in range(16101, 16160):  # Loop through ports 16101 to 16110
-        ip = "127.0.0.1"
+    mac_oid_base = '1.3.6.1.2.1.2.2.1.6'  # OID for ifPhysAddress (MAC 
+
+    ip = "127.0.0.1"  
+    for port in range(16101, 16161):  
         print(f"\nQuerying device at {ip}:{port}")
         device_info = {}
+
+        interfaces = get_supported_interfaces(ip, port) 
+        if interfaces: 
+            print(f"Available Interfaces Number: {', '.join(map(str, interfaces))}")
+        else:
+            print("No interfaces found.")
+            continue 
+
         for key, oid in oids.items():
             value = snmp_get(ip, oid, port)
             device_info[key] = value
+
+        mac_addresses = {}
+        for interface in interfaces:
+            mac_oid = f"{mac_oid_base}.{interface}"  
+            mac_address = snmp_get(ip, mac_oid, port)
+            if mac_address:
+                mac_addresses[interface] = mac_address
 
         # Print device information
         print("\nDevice Information:")
         for key, value in device_info.items():
             print(f"{key}: {value}")
+
+        # Print MAC addresses for each interface
+        if mac_addresses:
+            print("\nMAC Addresses for Interfaces:")
+            for interface, mac_address in mac_addresses.items():
+                print(f"Interface {interface} MAC Address: {mac_address}")
+
 
 
 if __name__ == "__main__":
